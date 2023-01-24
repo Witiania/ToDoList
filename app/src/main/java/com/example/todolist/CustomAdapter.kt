@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomAdapter(private val mList: List<ToDoItem>):RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(private val mList: MutableList<ToDoItem>):RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -20,6 +20,11 @@ class CustomAdapter(private val mList: List<ToDoItem>):RecyclerView.Adapter<Cust
         holder.description.text = item.description
         holder.number.text = item.number.toString()
 
+    }
+    //Добавляем новый элемент при нажатии на fub и обновляем список для корректного отображения
+    fun addItem(item: ToDoItem){
+        mList.add(item)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
