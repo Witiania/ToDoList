@@ -1,3 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ToDoList</string>
+    <string name="add_item">add_item</string>
+    <string name="title_will_be_here">title will be here</string>
+    <string name="description_will_be_here">description will be here</string>
+    <string name="number_will_be_here">number will be here</string>
+    <string name="ok">OK</string>
+    <string name="cancel" tools:ignore="ButtonCase">cancel</string>
 </resources>

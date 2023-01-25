@@ -21,7 +21,7 @@ class CustomAdapter(private val mList: MutableList<ToDoItem>):RecyclerView.Adapt
         holder.number.text = item.number.toString()
 
     }
-    //Добавляем новый элемент при нажатии на fub и обновляем список для корректного отображения
+    //Добавляем новый элемент в RV
     fun addItem(item: ToDoItem){
         mList.add(item)
         notifyDataSetChanged()

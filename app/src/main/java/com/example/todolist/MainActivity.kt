@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.widget.Adapter
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class MainActivity : AppCompatActivity() {
 
     private lateinit var stubContainer: LinearLayout
-    private lateinit var fub: FloatingActionButton
+    private lateinit var fab: FloatingActionButton
     private lateinit var recyclerview: RecyclerView
     private lateinit var adapter: CustomAdapter
 
@@ -25,11 +24,13 @@ class MainActivity : AppCompatActivity() {
         // getting the recyclerview by its id
         recyclerview = findViewById<RecyclerView>(R.id.main_recycler_view)
         stubContainer = findViewById(R.id.main_no_items_container)
-        fub = findViewById(R.id.main_fub)
+        fab = findViewById(R.id.main_fub)
 
-        fub.setOnClickListener {
-            adapter.addItem(ToDoItem("New_Title","It WOKS!",444))
-            Log.d("testLog","add item")
+        fab.setOnClickListener {
+//            adapter.addItem(ToDoItem("New_Title","It WOKS!",444))
+//            Log.d("testLog","add item")
+            val dialog = CustomDialog(this)
+            dialog.show()
         }
 
         // this creates a vertical layout Manager
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         val data = ArrayList<ToDoItem>()
 
         // This loop will create 100 Views containing
-        for (item in 1..100) {
+        for (item in 1..20) {
             data.add(ToDoItem("title", "description",item))
         }
 
@@ -62,6 +63,12 @@ class MainActivity : AppCompatActivity() {
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
 
+
+        }
+    //Добавляем новый элемент
+    fun addItem(item:ToDoItem){
+        adapter.addItem(item)
+//
     }
 
 }
