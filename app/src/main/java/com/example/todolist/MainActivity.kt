@@ -41,9 +41,9 @@ class MainActivity : AppCompatActivity() {
         val data = ArrayList<ToDoItem>()
 
         // This loop will create 100 Views containing
-        for (item in 1..20) {
-            data.add(ToDoItem("title", "description",item))
-        }
+//        for (item in 1..20) {
+//           data.add(ToDoItem("title", "description",item))
+//       }
 
         //Проверка, пустой ли список RV
         if(data.isEmpty()){
@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
         }
     //Добавляем новый элемент
     fun addItem(item:ToDoItem){
+        stubContainer.visibility = INVISIBLE
+        recyclerview.visibility = VISIBLE
         adapter.addItem(item)
 //
     }
