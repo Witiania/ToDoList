@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class ToDoItem(
     //Обозначает номер строки в таблице, каждый номер уникален
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     val title:String,
     val description:String,
     val number: Int

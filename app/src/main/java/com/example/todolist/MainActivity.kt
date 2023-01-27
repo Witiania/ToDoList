@@ -6,8 +6,14 @@ import android.util.Log
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.todolist.room.AppDatabase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +22,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab: FloatingActionButton
     private lateinit var recyclerview: RecyclerView
     private lateinit var adapter: CustomAdapter
+    private lateinit var db:AppDatabase
+
+    //№3 Для обработки данных создаем LiveData
+    private lateinit var todoLiveData: LiveData<List<ToDoItem>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,50 +37,48 @@ class MainActivity : AppCompatActivity() {
         fab = findViewById(R.id.main_fub)
 
         fab.setOnClickListener {
-//            adapter.addItem(ToDoItem("New_Title","It WOKS!",444))
-//            Log.d("testLog","add item")
+            //№1 Появление диалогового окна для сбора информации - переход на CustomDialog
             val dialog = CustomDialog(this)
             dialog.show()
         }
 
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(this)
-
-        //Создаем проверку нашего Адаптера, используя цикл
-        // ArrayList of class ItemsViewModel
-        val data = ArrayList<ToDoItem>()
-
-        // This loop will create 100 Views containing
-//        for (item in 1..20) {
-//           data.add(ToDoItem("title", "description",item))
-//       }
-
-        //Проверка, пустой ли список RV
-        if(data.isEmpty()){
-            stubContainer.visibility = VISIBLE
-            recyclerview.visibility = INVISIBLE
-            Log.d("testLog","List empty")
-        }else{
-            stubContainer.visibility = INVISIBLE
-            recyclerview.visibility = VISIBLE
-            Log.d("testLog","List NOT empty")
-        }
-
-
-        // This will pass the ArrayList to our Adapter
-            adapter = CustomAdapter(data)
-
-        // Setting the Adapter with the recyclerview
+        adapter = CustomAdapter(mutableListOf())
         recyclerview.adapter = adapter
 
+        //Инициализируем базу данных
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
+        //№3.1 Инициализировали LiveData, достаем все что есть в БД
+        todoLiveData = db.toDoDao().getAllItems()
 
-        }
-    //Добавляем новый элемент
+        //#4 Отображаем полученные данные в списке
+        //Осервер слушает (принимает данные из LiveData) и отправляет в RV где происходит обновление списка
+        todoLiveData.observe(this, Observer {
+            adapter.updateList(it)
+
+            if (it.isEmpty()) {
+                stubContainer.visibility = VISIBLE
+                recyclerview.visibility = INVISIBLE
+                Log.d("testLog", "List empty")
+            } else {
+                stubContainer.visibility = INVISIBLE
+                recyclerview.visibility = VISIBLE
+                Log.d("testLog", "List NOT empty")
+            }
+
+            Log.d("roomCheckLog","->$it")
+        })
+    }
     fun addItem(item:ToDoItem){
         stubContainer.visibility = INVISIBLE
         recyclerview.visibility = VISIBLE
-        adapter.addItem(item)
-//
+        db.toDoDao().insertItem(item)
+        //№2.2 с помощью метода InsertItem Добавляем Item с данными в БД
     }
-
-}
+        }

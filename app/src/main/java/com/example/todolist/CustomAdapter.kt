@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomAdapter(private val mList: MutableList<ToDoItem>):RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(private var mList: MutableList<ToDoItem>):RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -22,8 +22,8 @@ class CustomAdapter(private val mList: MutableList<ToDoItem>):RecyclerView.Adapt
 
     }
     //Добавляем новый элемент в RV
-    fun addItem(item: ToDoItem){
-        mList.add(item)
+    fun updateList(updatedList:List<ToDoItem>){
+        mList = updatedList.toMutableList()
         notifyDataSetChanged()
     }
 

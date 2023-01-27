@@ -47,12 +47,14 @@ class CustomDialog (var activity: MainActivity):Dialog(activity),View.OnClickLis
     }
  //Имплементируемая функция через View.OnClickListener, в функции отобюражает всек кликабельные элементы разом
     override fun onClick(view: View) {
+     //№2 Отправляем данные в базу данных (БД)
+     //№2.1 Вытаскиваем данные из полей ввода
         when(view.id) {
                 R.id.dialog_ok_button ->{
                     val inputTitleResult = inputFieldTitle.text.toString()
                     val inputDescriptionResult = inputFieldDescription.text.toString()
                     val inputNumberResult = inputFieldNumber.text.toString().toInt()
-                    activity.addItem(ToDoItem(inputTitleResult,inputDescriptionResult,inputNumberResult))
+                    activity.addItem(ToDoItem(0,inputTitleResult,inputDescriptionResult,inputNumberResult))
                     dismiss()
                 }
                 R.id.dialog_cancel_button -> dismiss() //dismiss закрытие диалоговго окна
