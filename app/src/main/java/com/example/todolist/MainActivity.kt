@@ -16,7 +16,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.todolist.room.AppDatabase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),OnItemClick {
 
     private lateinit var stubContainer: LinearLayout
     private lateinit var fab: FloatingActionButton
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(this)
-        adapter = CustomAdapter(mutableListOf())
+        adapter = CustomAdapter(mutableListOf(),this)
         recyclerview.adapter = adapter
 
         //Инициализируем базу данных
@@ -75,10 +75,14 @@ class MainActivity : AppCompatActivity() {
             Log.d("roomCheckLog","->$it")
         })
     }
+    //№2.2 с помощью метода InsertItem Добавляем Item с данными в БД
     fun addItem(item:ToDoItem){
         stubContainer.visibility = INVISIBLE
         recyclerview.visibility = VISIBLE
         db.toDoDao().insertItem(item)
-        //№2.2 с помощью метода InsertItem Добавляем Item с данными в БД
+           }
+
+    override fun itemClicked(item: ToDoItem) {
+      Log.d("OnClickedItem","itemClicked $item")
     }
-        }
+}
