@@ -2,19 +2,26 @@ package com.example.todolist
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 
-class CustomDialog (var activity: MainActivity):Dialog(activity),View.OnClickListener{
+class CustomDialog(
+    var activity: MainActivity,
+    private val isNewItem: Boolean,
+    private val item: ToDoItem?
+) : Dialog(activity), View.OnClickListener {
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
-    private lateinit var inputFieldTitle:EditText
-    private lateinit var inputFieldDescription:EditText
-    private lateinit var inputFieldNumber:EditText
+    private lateinit var inputFieldTitle: EditText
+    private lateinit var inputFieldDescription: EditText
+    private lateinit var inputFieldNumber: EditText
+    private lateinit var dialogLabel: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +30,32 @@ class CustomDialog (var activity: MainActivity):Dialog(activity),View.OnClickLis
 
         inputFieldTitle = findViewById(R.id.dialog_input_title)
         inputFieldDescription = findViewById(R.id.dialog_input_description)
-        inputFieldNumber = findViewById(R.id.dialog_input_number)
+        dialogLabel = findViewById(R.id.dialog_label)
+
+        if (isNewItem) {
+            //Если создаетсяч новаяя ячейка
+            createNewItem()
+        } else {
+            //Если создается не новая ячейка
+            updateExistingItem()
+        }
+
         dialogSizeControl()
         initViews()
 
+    }
+
+    private fun updateExistingItem() {
+        Log.d("dialogTest", "update")
+        dialogLabel.text = "Update Item"
+        inputFieldTitle.setText(item?.title)
+        inputFieldDescription.setText(item?.description)
+
+
+    }
+
+    private fun createNewItem() {
+        Log.d("dialogTest", "new")
     }
 
 
@@ -44,24 +73,57 @@ class CustomDialog (var activity: MainActivity):Dialog(activity),View.OnClickLis
         cancelButton = findViewById<Button>(R.id.dialog_cancel_button)
         okButton.setOnClickListener(this)
         cancelButton.setOnClickListener(this)
-    }
- //Имплементируемая функция через View.OnClickListener, в функции отобюражает всек кликабельные элементы разом
-    override fun onClick(view: View) {
-     //№2 Отправляем данные в базу данных (БД)
-     //№2.1 Вытаскиваем данные из полей ввода
-        when(view.id) {
-                R.id.dialog_ok_button ->{
-                    val inputTitleResult = inputFieldTitle.text.toString()
-                    val inputDescriptionResult = inputFieldDescription.text.toString()
-                    val inputNumberResult = inputFieldNumber.text.toString().toInt()
-                    activity.addItem(ToDoItem(0,inputTitleResult,inputDescriptionResult,inputNumberResult))
-                    dismiss()
-                }
-                R.id.dialog_cancel_button -> dismiss() //dismiss закрытие диалоговго окна
-                else -> {
-                }
-            }
-        }
+
 
     }
+
+    override fun onClick(view: View) {
+        when (view.id) {
+            R.id.dialog_ok_button -> {
+                okButtonClicker()
+            }
+            R.id.dialog_cancel_button -> {
+                cancelButtonClicked()
+            }
+            else -> {
+                elseBeenClicked()
+            }
+        }
+    }
+
+    private fun elseBeenClicked() {
+
+    }
+
+    private fun cancelButtonClicked() {
+        dismiss()
+    }
+
+    private fun okButtonClicker() {
+        //№2 отправляем данные в БД
+        //2,1 вытаскиваем данные из полей
+        //Если создается новая ячейка то этот сценарий
+        if (isNewItem) {
+            okNewItemBeenClicked()
+        } else {
+            //Если не новая то этот
+            okUpdateItemBeenClicked()
+        }
+        dismiss()
+    }
+
+    private fun okUpdateItemBeenClicked() {
+        val inputTitleResult = inputFieldTitle.text.toString()
+        val inputDescriptionResult = inputFieldDescription.text.toString()
+        item?.let { ToDoItem(it.id, inputTitleResult, inputDescriptionResult) }
+            ?.let { activity.deleteItem(it) }
+    }
+
+    private fun okNewItemBeenClicked() {
+        val inputTitleResult = inputFieldTitle.text.toString()
+        val inputDescriptionResult = inputFieldDescription.text.toString()
+        activity.addItem(ToDoItem(0, inputTitleResult, inputDescriptionResult))
+    }
+
+}
 

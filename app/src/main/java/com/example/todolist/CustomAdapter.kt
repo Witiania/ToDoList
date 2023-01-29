@@ -19,7 +19,6 @@ class CustomAdapter(private var mList: MutableList<ToDoItem>,private val click:O
         val item = mList[position]
         holder.title.text = item.title
         holder.description.text = item.description
-        holder.number.text = item.number.toString()
         holder.container.setOnClickListener {
             click.itemClicked(mList[position])
         }
@@ -38,7 +37,6 @@ class CustomAdapter(private var mList: MutableList<ToDoItem>,private val click:O
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val title: TextView = itemView.findViewById(R.id.item_recycler_title)
         val description: TextView = itemView.findViewById(R.id.item_recycler_description)
-        val number: TextView = itemView.findViewById(R.id.item_recycler_number)
         val container:ConstraintLayout = itemView.findViewById(R.id.item_recycler_container)
 
     }
