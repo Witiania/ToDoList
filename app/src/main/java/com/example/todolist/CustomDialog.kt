@@ -1,7 +1,9 @@
 package com.example.todolist
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
+import android.provider.Settings.Global.getString
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -56,6 +58,15 @@ class CustomDialog(
 
     private fun createNewItem() {
         Log.d("dialogTest", "new")
+        dialogLabel.text = "Update Item"
+        inputFieldTitle.setText(item?.title)
+        inputFieldDescription.setText(item?.description)
+
+        val sharedPref =activity.getPreferences(Context.MODE_PRIVATE)
+        val titleFromPrefs = sharedPref.getString("titleKey", " ")
+        val descriptionFromPrefs = sharedPref.getString("descriptionKey", " ")
+        inputFieldTitle.setText(titleFromPrefs)
+        inputFieldDescription.setText(descriptionFromPrefs)
     }
 
 
@@ -123,7 +134,24 @@ class CustomDialog(
         val inputTitleResult = inputFieldTitle.text.toString()
         val inputDescriptionResult = inputFieldDescription.text.toString()
         activity.addItem(ToDoItem(0, inputTitleResult, inputDescriptionResult))
+        inputFieldTitle.text.clear()
+        inputFieldDescription.text.clear()
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (isNewItem) {
+            val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+            Log.d("share", "save data start")
+            with(sharedPref.edit()) {
+                val inputTitleResult = inputFieldTitle.text.toString()
+                val inputDescriptionResult = inputFieldDescription.text.toString()
+                putString("titleKey", inputTitleResult)
+                putString("descriptionKey", inputDescriptionResult)
+                apply()
+                Log.d("share", "save data finish")
+            }
+        }
+    }
 }
 

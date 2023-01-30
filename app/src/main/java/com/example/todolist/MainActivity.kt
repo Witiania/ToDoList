@@ -1,5 +1,6 @@
 package com.example.todolist
 
+import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +20,6 @@ import androidx.room.Room
 import com.example.todolist.room.AppDatabase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import android.content.Context
 
 class MainActivity : AppCompatActivity(),OnItemClick {
 
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(),OnItemClick {
 
         fab.setOnClickListener {
             //№1 Появление диалогового окна для сбора информации - переход на CustomDialog
+
             val dialog = CustomDialog(this, true, null)
             dialog.show()
         }
@@ -131,7 +132,7 @@ class MainActivity : AppCompatActivity(),OnItemClick {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 // this method is called when we swipe our item to right direction.
                 // on below line we are getting the item at a particular position.
-                val deletedItem: ToDoItem =
+                val deletedToDoItem: ToDoItem =
                     data.get(viewHolder.adapterPosition)
 
 
@@ -142,27 +143,27 @@ class MainActivity : AppCompatActivity(),OnItemClick {
 
                 // this method is called when item is swiped.
                 // below line is to remove item from our array list.
-                data.toMutableList().removeAt(viewHolder.adapterPosition)
+                data.toMutableList().removeAt(position)
 
                 // below line is to notify our item is removed from adapter.
-                adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                adapter.notifyItemRemoved(position)
 
                 // below line is to display our snackbar with action.
                 // below line is to display our snackbar with action.
                 // below line is to display our snackbar with action.
-                Snackbar.make(recyclerview, "Deleted " + deletedItem.title, Snackbar.LENGTH_LONG)
+                Snackbar.make(recyclerview, "Deleted " + deletedToDoItem.title, Snackbar.LENGTH_LONG)
                     .setAction(
                         "Undo",
                         View.OnClickListener {
                             // adding on click listener to our action of snack bar.
                             // below line is to add our item to array list with a position.
-                            data.toMutableList().add(position, deletedItem)
+                            data.toMutableList().add(position, deletedToDoItem)
 
                             // below line is to notify item is
                             // added to our adapter class.
                             adapter.notifyItemInserted(position)
                         }).show()
-                 deleteItem(deletedItem)
+                 deleteItem(deletedToDoItem)
             }
             // at last we are adding this
             // to our recycler view.
