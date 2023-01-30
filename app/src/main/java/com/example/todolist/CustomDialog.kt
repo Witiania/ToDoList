@@ -58,7 +58,7 @@ class CustomDialog(
 
     private fun createNewItem() {
         Log.d("dialogTest", "new")
-        dialogLabel.text = "Update Item"
+        dialogLabel.text = "New Item"
         inputFieldTitle.setText(item?.title)
         inputFieldDescription.setText(item?.description)
 
@@ -126,8 +126,8 @@ class CustomDialog(
     private fun okUpdateItemBeenClicked() {
         val inputTitleResult = inputFieldTitle.text.toString()
         val inputDescriptionResult = inputFieldDescription.text.toString()
-        item?.let { ToDoItem(it.id, inputTitleResult, inputDescriptionResult) }
-            ?.let { activity.deleteItem(it) }
+        item?.let { ToDoItem(it.id,inputTitleResult,inputDescriptionResult) }
+            ?.let { activity.updateItem(it) }
     }
 
     private fun okNewItemBeenClicked() {
