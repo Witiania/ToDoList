@@ -22,7 +22,6 @@ class CustomDialog(
     private lateinit var cancelButton: Button
     private lateinit var inputFieldTitle: EditText
     private lateinit var inputFieldDescription: EditText
-    private lateinit var inputFieldNumber: EditText
     private lateinit var dialogLabel: TextView
 
 
@@ -49,6 +48,7 @@ class CustomDialog(
 
     private fun updateExistingItem() {
         Log.d("dialogTest", "update")
+
         dialogLabel.text = "Update Item"
         inputFieldTitle.setText(item?.title)
         inputFieldDescription.setText(item?.description)
