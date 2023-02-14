@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -23,14 +24,16 @@ import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(),OnItemClick {
 
+    //Даем доступ к ViewModel
+    private val mMainViewModel:MainViewModel by viewModels()
+
     private lateinit var stubContainer: LinearLayout
     private lateinit var fab: FloatingActionButton
     private lateinit var recyclerview: RecyclerView
     private lateinit var adapter: CustomAdapter
-    private lateinit var db:AppDatabase
+    //
 
-    //№3 Для обработки данных создаем LiveData
-    private lateinit var todoLiveData: LiveData<List<ToDoItem>>
+
 
     private lateinit var data:List<ToDoItem>
 
@@ -55,19 +58,12 @@ class MainActivity : AppCompatActivity(),OnItemClick {
         adapter = CustomAdapter(mutableListOf(),this)
         recyclerview.adapter = adapter
 
-        //Инициализируем базу данных
-        db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "database-name"
-        ).fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
-            .build()
-        //№3.1 Инициализировали LiveData, достаем все что есть в БД
-        todoLiveData = db.toDoDao().getAllItems()
 
+
+        mMainViewModel.getAllData()
         //#4 Отображаем полученные данные в списке
         //Осервер слушает (принимает данные из LiveData) и отправляет в RV где происходит обновление списка
-        todoLiveData.observe(this, Observer {
+        mMainViewModel.todoItemListResult.observe(this, Observer {
             data = it
             adapter.updateList(it)
 
@@ -176,13 +172,14 @@ class MainActivity : AppCompatActivity(),OnItemClick {
     fun addItem(item:ToDoItem){
         stubContainer.visibility = INVISIBLE
         recyclerview.visibility = VISIBLE
-        db.toDoDao().insertItem(item)
+        mMainViewModel.insertItem(item)
            }
+
     fun updateItem(item: ToDoItem){
-        db.toDoDao().updateItem(item)
+        mMainViewModel.updateItem(item)
     }
     fun deleteItem(item: ToDoItem){
-        db.toDoDao().deleteItem(item)
+       mMainViewModel.deleteItem(item)
     }
 
     override fun itemClicked(item: ToDoItem) {

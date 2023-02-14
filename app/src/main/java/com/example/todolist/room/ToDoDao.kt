@@ -9,7 +9,7 @@ interface ToDoDao {
 
     //Вытащить что-то(так как не указано что, вытаскиваем все)из таблицы (БД) и показать
     @Query("SELECT * FROM todoitem")
-    fun getAllItems(): LiveData<List<ToDoItem>>
+    fun getAllItems(): List<ToDoItem>
 
     //Вдоизменяемые аннотации таблицы:
     //Вставляем item
