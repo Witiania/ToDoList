@@ -1,22 +1,24 @@
 package com.example.todolist
 
-import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
-import android.provider.Settings.Global.getString
-import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.view.WindowManager
+import android.view.*
+import android.view.WindowManager.LayoutParams
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+
 
 class CustomDialog(
     var activity: MainActivity,
     private val isNewItem: Boolean,
     private val item: ToDoItem?
-) : Dialog(activity), View.OnClickListener {
+) : DialogFragment(), View.OnClickListener {
+
+    private val mCustomDialogViewModel:CustomDialogViewModel by activityViewModels()
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -24,14 +26,14 @@ class CustomDialog(
     private lateinit var inputFieldDescription: EditText
     private lateinit var dialogLabel: TextView
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.dialog_template)
-
-        inputFieldTitle = findViewById(R.id.dialog_input_title)
-        inputFieldDescription = findViewById(R.id.dialog_input_description)
-        dialogLabel = findViewById(R.id.dialog_label)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        val view:View = inflater.inflate(R.layout.dialog_template,container,false)
+        initViews(view)
 
         if (isNewItem) {
             //Если создаетсяч новаяя ячейка
@@ -40,53 +42,51 @@ class CustomDialog(
             //Если создается не новая ячейка
             updateExistingItem()
         }
-
         dialogSizeControl()
-        initViews()
+        return view
+    }
 
+    override fun onResume() {
+        super.onResume()
+        dialogSizeControl()
+        mCustomDialogViewModel.todoItemResult.observe(this, Observer {
+            if(isNewItem) {
+                inputFieldTitle.setText(it.title)
+                inputFieldDescription.setText(it.description)
+            }
+        })
     }
 
     private fun updateExistingItem() {
-        Log.d("dialogTest", "update")
 
         dialogLabel.text = "Update Item"
         inputFieldTitle.setText(item?.title)
         inputFieldDescription.setText(item?.description)
-
-
     }
 
     private fun createNewItem() {
-        Log.d("dialogTest", "new")
-        dialogLabel.text = "New Item"
-        inputFieldTitle.setText(item?.title)
-        inputFieldDescription.setText(item?.description)
 
-        val sharedPref =activity.getPreferences(Context.MODE_PRIVATE)
-        val titleFromPrefs = sharedPref.getString("titleKey", " ")
-        val descriptionFromPrefs = sharedPref.getString("descriptionKey", " ")
-        inputFieldTitle.setText(titleFromPrefs)
-        inputFieldDescription.setText(descriptionFromPrefs)
+        mCustomDialogViewModel.getToDoItemFromPrefs()
+
     }
 
+    private fun initViews(view: View) {
+        inputFieldTitle = view.findViewById(R.id.dialog_input_title)
+        inputFieldDescription = view.findViewById(R.id.dialog_input_description)
+        dialogLabel =  view.findViewById(R.id.dialog_label)
+
+        okButton =  view.findViewById<Button>(R.id.dialog_ok_button)
+        cancelButton =  view.findViewById<Button>(R.id.dialog_cancel_button)
+        okButton.setOnClickListener(this)
+        cancelButton.setOnClickListener(this)}
 
     private fun dialogSizeControl() {
-        val lp = WindowManager.LayoutParams()
-        lp.copyFrom(this.window?.attributes)
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        lp.gravity = Gravity.CENTER
-        this.window?.attributes = lp
+        val params:ViewGroup.LayoutParams = dialog!!.window!!.attributes
+        params.width = ActionBar.LayoutParams.MATCH_PARENT
+        params.height = ActionBar.LayoutParams.WRAP_CONTENT
+        dialog!!.window!!.attributes = params as LayoutParams
     }
 
-    private fun initViews() {
-        okButton = findViewById<Button>(R.id.dialog_ok_button)
-        cancelButton = findViewById<Button>(R.id.dialog_cancel_button)
-        okButton.setOnClickListener(this)
-        cancelButton.setOnClickListener(this)
-
-
-    }
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -141,16 +141,11 @@ class CustomDialog(
     override fun onStop() {
         super.onStop()
         if (isNewItem) {
-            val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
-            Log.d("share", "save data start")
-            with(sharedPref.edit()) {
+
                 val inputTitleResult = inputFieldTitle.text.toString()
                 val inputDescriptionResult = inputFieldDescription.text.toString()
-                putString("titleKey", inputTitleResult)
-                putString("descriptionKey", inputDescriptionResult)
-                apply()
-                Log.d("share", "save data finish")
-            }
+                mCustomDialogViewModel.saveDataInPrefs("titleKey", inputTitleResult)
+                mCustomDialogViewModel.saveDataInPrefs("descriptionKey", inputTitleResult)
         }
     }
 }

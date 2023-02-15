@@ -23,15 +23,21 @@ class MainViewModel(app:Application): AndroidViewModel(app){
     }
 
     fun insertItem(item: ToDoItem) {
-        roomManager.insertItem(item)
-    }
+        todoItemList.value.let {
+            //К списку прибавляем новый элемент
+            todoItemList.postValue(it?.plus(item))
+            roomManager.insertItem(item)
+    }}
 
     fun updateItem(item: ToDoItem) {
         roomManager.updateItem(item)
     }
 
     fun deleteItem(item: ToDoItem) {
+        todoItemList.value.let{
+            todoItemList.postValue(it?.minus(item))
         roomManager.deleteItem(item)
+        }
 
     }
 

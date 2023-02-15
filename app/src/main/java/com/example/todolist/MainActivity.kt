@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity(),OnItemClick {
         fab.setOnClickListener {
             //№1 Появление диалогового окна для сбора информации - переход на CustomDialog
 
-            val dialog = CustomDialog(this, true, null)
-            dialog.show()
+            val dialogFragment = CustomDialog(this, true, null)
+            dialogFragment.show(supportFragmentManager,"Custom Dialog")
         }
 
         // this creates a vertical layout Manager
@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(),OnItemClick {
     }
 
     override fun itemClicked(item: ToDoItem) {
-        val dialog = CustomDialog(this,false,item)
-        dialog.show()
+        val dialogFragment = CustomDialog(this, true, item)
+        dialogFragment.show(supportFragmentManager,"Custom Dialog")
     }
 }
